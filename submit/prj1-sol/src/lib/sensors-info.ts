@@ -1,176 +1,166 @@
 import { Errors, Checkers } from 'cs544-js-utils';
-import {
-  validateFindCommand, SensorType, Sensor, SensorReading,
-  makeSensorType, makeSensor, makeSensorReading
-} from './validators.js';
-import { checkFlatReq } from 'cs544-js-utils/dist/lib/checkers.js';
+import { validateFindCommand, SensorType, Sensor, SensorReading, makeSensorType, makeSensor, makeSensorReading } from './validators.js';
 
-type FlatReq = Checkers.FlatReq; //dictionary mapping strings to strings
+type FlatReq = Checkers.FlatReq; // Dictionary mapping strings to strings
 
-//marks T as having being run through validate()
+// Marks T as having been run through validate()
 type Checked<T> = Checkers.Checked<T>;
 
 /*********************** Top Level Sensors Info ************************/
-
+// 3 Dictionaries are used here as to store sensorTypes, sensors and sensorReadings respectively.
 export class SensorsInfo {
-
-  //TODO: define instance fields; good idea to keep private and
-  //readonly when possible.
-  //Defined Dictionary having key values pairs as follows.
-  private dictionary: {
-    sensorType: SensorType[],
-    sensor: Sensor[],
-    sensorReading: SensorReading[]
-  };
+  private sensorTypes: Record<string, SensorType> ;
+  private sensors: Record<string, Sensor> ;
+  private sensorReadings: Record<string, SensorReading>;
 
   constructor() {
-    //TODO
-    //Intializing it.
-    this.dictionary = {
-      sensorType: [],
-      sensor: [],
-      sensorReading: []
-    };
-
+    // TODO: Initialized empty
+    this.sensorTypes = {};
+    this.sensors = {};
+    this.sensorReadings = {};
   }
-
-  /** Clear out all sensors info from this object.  Return empty array */
+// Clearing 
   clear(): Errors.Result<string[]> {
-    //TODO
-    this.dictionary = {
-      sensorType: [],
-      sensor: [],
-      sensorReading: []
-    };
+    // Clearing all the data
+    this.sensorTypes = {};
+    this.sensors = {};
+    this.sensorReadings = {};
     return Errors.okResult([]);
   }
-
-  /** Add sensor-type defined by req to this.  If there is already a
-   *  sensor-type having the same id, then replace it. Return single
-   *  element array containing the added sensor-type.
-   *
-   *  Error Codes:
-   *     'REQUIRED': a required field is missing.
-   *     'BAD_VAL': a bad value in a field (a numeric field is not numeric)
-   *     'BAD_RANGE': an incorrect range with min >= max.
-   */
+ //Adding Sensors Type .. If the sensor is already present then we wont be add with same unique id as stated otherwise we will add it and return as said.
   addSensorType(req: Record<string, string>): Errors.Result<SensorType[]> {
-    const sensorTypeResult = makeSensorType(req);
-    if (!sensorTypeResult.isOk) return sensorTypeResult;
-    const sensorType = sensorTypeResult.val;
-    //TODO add into this
-    const index = this.dictionary.sensorType.findIndex(x => x.id===sensorType.id)
-    if (index >=0) this.dictionary.sensorType[index] = sensorType 
-    else this.dictionary.sensorType.push(sensorType);
-    return Errors.okResult([sensorType]);
+    const sensorTypeResult = makeSensorType(req); // Taking sensorType from req.
+  
+    if (sensorTypeResult.isOk) {
+      const { val: sensorType } = sensorTypeResult;
+  
+      // Check if sensor ID already exists
+      if (this.sensorTypes[sensorType.id]) {
+        return Errors.errResult("ERROR",{code:"BAD_ID"}); // Here one error should be thrown as we have same sensorId and trying to add it with the same id.. Somehow not working as expected.
+       
+      }
+  
+      this.sensorTypes[sensorType.id] = sensorType; // Pushing to dictionary of sensorTypes with current sensor id
+      return Errors.okResult([sensorType]); // Returning the sensorType if everything is fine
+    } else {
+      return sensorTypeResult;  // Return the error directly
+    }
   }
+  
 
-  /** Add sensor defined by req to this.  If there is already a 
-   *  sensor having the same id, then replace it.  Return single element
-   *  array containing the added sensor.
-   *
-   *  Error Codes:
-   *     'REQUIRED': a required field is missing.
-   *     'BAD_VAL': a bad value in a field (a numeric field is not numeric)
-   *     'BAD_RANGE': an incorrect range with min >= max.
-   *     'BAD_ID': unknown sensorTypeId.
-   */
+ // Adding particular Sensor is said in the requirment nd same will return the sensor.
   addSensor(req: Record<string, string>): Errors.Result<Sensor[]> {
-    //TODO
-    const sensorResult = makeSensor(req);
+    const sensorResult = makeSensor(req); // Using Sensor as function gives us the data.
     if (!sensorResult.isOk) return sensorResult;
-    const sensor = sensorResult.val;
-    //devam
-    const index = this.dictionary.sensor.findIndex(x => x.id===sensor.id)
-    if (index >=0) this.dictionary.sensor[index] = sensor 
-    else this.dictionary.sensor.push(sensor);
-    return Errors.okResult([sensor]);
+
+  
+    const { val: sensor } = sensorResult;
+    this.sensors[sensor.id] = sensor; // Pushing it to sensors dictionary as well
+
+    return Errors.okResult([sensor]); // Returning on successfull adding of the things.
   }
 
-  /** Add sensor reading defined by req to this.  If there is already
-   *  a reading for the same sensorId and timestamp, then replace it.
-   *  Return single element array containing added sensor reading.
-   *
-   *  Error Codes:
-   *     'REQUIRED': a required field is missing.
-   *     'BAD_VAL': a bad value in a field (a numeric field is not numeric)
-   *     'BAD_RANGE': an incorrect range with min >= max.
-   *     'BAD_ID': unknown sensorId.
-   */
-  addSensorReading(req: Record<string, string>)
-    : Errors.Result<SensorReading[]> {
-    //TODO
+  //Sensor reading addmethod adn returning particular newly added reading.
+  addSensorReading(req: Record<string, string>): Errors.Result<SensorReading[]> {
     const sensorReadingResult = makeSensorReading(req);
     if (!sensorReadingResult.isOk) return sensorReadingResult;
-    const sensorReading = sensorReadingResult.val;
-    //devam
-    const index = this.dictionary.sensorReading.findIndex(x => x.sensorId===sensorReading.sensorId)
-    if (index >=0) this.dictionary.sensorReading[index] = sensorReading 
-    else this.dictionary.sensorReading.push(sensorReading);
+
+    //const sensorReading = sensorReadingResult.val;
+    const { val: sensorReading } = sensorReadingResult;
+  
+    const key = JSON.stringify({ sensorId: sensorReading.sensorId, timestamp: sensorReading.timestamp }); //Getting the timestamp of readings
+
+
+    this.sensorReadings[key] = sensorReading; // Pushing the sensorReading with a key if matching the push will be done.
+
     return Errors.okResult([sensorReading]);
   }
+  //Finding Sensor Type
 
-  /** Find sensor-types which satify req. Returns [] if none. 
-   *  Note that all primitive SensorType fields can be used to filter.
-   *  The returned array must be sorted by sensor-type id.
-   */
   findSensorTypes(req: FlatReq): Errors.Result<SensorType[]> {
-    const validResult: Errors.Result<Checked<FlatReq>> =
-      validateFindCommand('findSensorTypes', req);
-    if (!validResult.isOk) return validResult;
-    //TODO
-    console.log(req, Object.keys(req)?.[0], Object.keys(req)?.[0] === 'manufacturer')
-    const key: keyof SensorType = Object.keys(req)?.[0] as keyof SensorType
-    const res = this.dictionary.sensorType.filter((item: SensorType) => item[key] === req[key]) ?? []
-    return Errors.okResult(res);
+  
+    const sensorReq = validateFindCommand('findSensorTypes', req);
+    if (!sensorReq.isOk) return sensorReq;
+
+    const filteredSensorTypes = Object.values(this.sensorTypes).filter((sensorType) => {
+      for (const field in req) {
+        if (field in sensorType && (sensorType as any)[field] !== req[field]) return false;
+      }
+      if (req.id && sensorType.id !== req.id) return false;
+      if (req.manufacturer && sensorType.manufacturer !== req.manufacturer) return false;
+      if (req.quantity && sensorType.quantity !== req.quantity) return false;
+      return true;
+    });
+
+    filteredSensorTypes.sort((a, b) => a.id.localeCompare(b.id));
+    return Errors.okResult(filteredSensorTypes);
   }
 
-  /** Find sensors which satify req. Returns [] if none. 
-   *  Note that all primitive Sensor fields can be used to filter.
-   *  The returned array must be sorted by sensor id.
-   */
+  // Finding the Sensors based on the requirements 
+
   findSensors(req: FlatReq): Errors.Result<Sensor[]> {
-    //TODO
-    const key: keyof Sensor = Object.keys(req)?.[0] as keyof Sensor
-    const res = this.dictionary.sensor.filter((item: Sensor) => item[key] === req[key]) ?? []
-    return Errors.okResult(res);
-    // return Errors.okResult([]);
-  }
 
-  /** Find sensor readings which satify req. Returns [] if none.  Note
-   *  that req must contain sensorId to specify the sensor whose
-   *  readings are being requested.  Additionally, it may use
-   *  partially specified inclusive bounds [minTimestamp,
-   *  maxTimestamp] and [minValue, maxValue] to filter the results.
-   *
-   *  The returned array must be sorted numerically by timestamp.
-   */
+    const sensorRequired = validateFindCommand('findSensors', req);
+    if (!sensorRequired.isOk) return sensorRequired;
+
+    const requiredSensors = Object.values(this.sensors).filter((sensor) => {
+      if (req.id && sensor.id !== req.id) return false;
+      if (req.sensorTypeId && sensor.sensorTypeId !== req.sensorTypeId) return false;
+      return true;
+    });
+
+    requiredSensors.sort((a, b) => a.id.localeCompare(b.id));
+    return Errors.okResult(requiredSensors);
+  }
+  // Finding Reading particular to a sensor
   findSensorReadings(req: FlatReq): Errors.Result<SensorReading[]> {
-    //TODO
-    const key: keyof SensorReading = Object.keys(req)?.[0] as keyof SensorReading
-    const res = this.dictionary.sensorReading.filter((item: SensorReading) => item[key] === req[key] && item.timestamp > parseInt(req.minTimestamp) && item.timestamp < parseInt(req.maxTimestamp)) ?? []
-    return Errors.okResult(res);
-    // return Errors.okResult([]);
-  }
 
+    const validResult = validateFindCommand('findSensorReadings', req);
+    if (!validResult.isOk) return validResult;
+
+    const requiredSensorsReadings = Object.values(this.sensorReadings).filter(sensorReading => {
+      const {
+        sensorId,
+        minTimestamp,
+        maxTimestamp,
+        value,
+        minValue,
+        maxValue
+      } = req;
+    
+      if (sensorId && sensorReading.sensorId !== sensorId) return false;
+      if (minTimestamp && sensorReading.timestamp < Number(minTimestamp)) return false;
+      if (maxTimestamp && sensorReading.timestamp > Number(maxTimestamp)) return false;
+      if (value && sensorReading.value !== Number(value)) return false;
+      if (minValue && sensorReading.value < Number(minValue)) return false;
+      if (maxValue && sensorReading.value > Number(maxValue)) return false;
+    
+      return true;
+    });
+    
+    const filteredSensorsReadingByTimeStamp=requiredSensorsReadings.sort((a, b) => a.timestamp - b.timestamp); // Sorting this for the requirements
+    return Errors.okResult(requiredSensorsReadings);
+  }
 }
 
 /*********************** SensorsInfo Factory Functions *****************/
 
-export function makeSensorsInfo(sensorTypes: FlatReq[] = [],
+export function makeSensorsInfo(
+  sensorTypes: FlatReq[] = [],
   sensors: FlatReq[] = [],
-  sensorReadings: FlatReq[] = [])
-  : Errors.Result<SensorsInfo> {
+  sensorReadings: FlatReq[] = []
+): Errors.Result<SensorsInfo> {
   const sensorsInfo = new SensorsInfo();
-  const addResult =
-    addSensorsInfo(sensorTypes, sensors, sensorReadings, sensorsInfo);
-  return (addResult.isOk) ? Errors.okResult(sensorsInfo) : addResult;
+  const addResult = addSensorsInfo(sensorTypes, sensors, sensorReadings, sensorsInfo);
+  return addResult.isOk ? Errors.okResult(sensorsInfo) : addResult;
 }
 
-export function addSensorsInfo(sensorTypes: FlatReq[], sensors: FlatReq[],
+export function addSensorsInfo(
+  sensorTypes: FlatReq[],
+  sensors: FlatReq[],
   sensorReadings: FlatReq[],
-  sensorsInfo: SensorsInfo)
-  : Errors.Result<void> {
+  sensorsInfo: SensorsInfo
+): Errors.Result<void> {
   for (const sensorType of sensorTypes) {
     const result = sensorsInfo.addSensorType(sensorType);
     if (!result.isOk) return result;
@@ -186,8 +176,6 @@ export function addSensorsInfo(sensorTypes: FlatReq[], sensors: FlatReq[],
   return Errors.VOID_RESULT;
 }
 
-
-
 /****************************** Utilities ******************************/
 
-//TODO add any utility functions or classes
+// TODO: add any utility functions or classes
