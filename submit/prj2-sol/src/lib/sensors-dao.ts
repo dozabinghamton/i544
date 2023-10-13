@@ -94,7 +94,7 @@ export class SensorsDao {
      // Drop() removes the collections from DB.
      await this.dbSensorTypes.drop();
      await this.dbSensor.drop();
-     await this.dbSensorReading.drop();
+    await this.dbSensorReading.drop();
      return Errors.VOID_RESULT;
    } catch (error) {
      return Errors.errResult(error.message, 'DB');
@@ -255,6 +255,8 @@ const MONGO_DUPLICATE_CODE = 11000;
 const SENSORS_TYPE_COLLECTIONS = 'SensorType';
 const SENSORS_COLLECTIONS='Sensors';
 const SENSORS_READING='SensorsReadings'
+
+
 
 //Note to Grader-> Professor has provided the very similar example.. I referred that while implementing this.
 
