@@ -1,6 +1,7 @@
-import { SensorType, Sensor, SensorReading,
-	 SensorTypeSearch, SensorSearch, SensorReadingSearch,
-       } from './validators.js';
+import {
+  SensorType, Sensor, SensorReading,
+  SensorTypeSearch, SensorSearch, SensorReadingSearch,
+} from './validators.js';
 
 import { Errors, } from 'cs544-js-utils';
 
@@ -14,7 +15,7 @@ import * as mongo from 'mongodb';
 
 /** return a DAO for sensors at URL mongodbUrl */
 export async function
-makeSensorsDao(mongodbUrl: string) : Promise<Errors.Result<SensorsDao>> {
+  makeSensorsDao(mongodbUrl: string): Promise<Errors.Result<SensorsDao>> {
   return SensorsDao.make(mongodbUrl);
 }
 
@@ -29,7 +30,7 @@ const MONGO_OPTIONS = {
 
 export class SensorsDao {
 
-  
+
   private constructor() {
     //TODO
   }
@@ -38,7 +39,7 @@ export class SensorsDao {
    *  Error Codes: 
    *    DB: a database error was encountered.
    */
-  static async make(dbUrl: string) : Promise<Errors.Result<SensorsDao>> {
+  static async make(dbUrl: string): Promise<Errors.Result<SensorsDao>> {
     //takes care of all async ops, then call constructor
     return Errors.errResult('todo', 'TODO');
   }
@@ -48,7 +49,7 @@ export class SensorsDao {
    *  Error Codes: 
    *    DB: a database error was encountered.
    */
-  async close() : Promise<Errors.Result<void>> {
+  async close(): Promise<Errors.Result<void>> {
     return Errors.errResult('todo', 'TODO');
   }
 
@@ -56,7 +57,7 @@ export class SensorsDao {
    *  Error Codes: 
    *    DB: a database error was encountered.
    */
-  async clear() : Promise<Errors.Result<void>> {
+  async clear(): Promise<Errors.Result<void>> {
     return Errors.errResult('todo', 'TODO');
   }
 
@@ -67,8 +68,7 @@ export class SensorsDao {
    *    DB: a database error was encountered.
    */
   async addSensorType(sensorType: SensorType)
-    : Promise<Errors.Result<SensorType>>
-  {
+    : Promise<Errors.Result<SensorType>> {
     return Errors.errResult('todo', 'TODO');
   }
 
@@ -77,7 +77,7 @@ export class SensorsDao {
    *    EXISTS: sensor with specific id already exists in DB.
    *    DB: a database error was encountered.
    */
-  async addSensor(sensor: Sensor) : Promise<Errors.Result<Sensor>> {
+  async addSensor(sensor: Sensor): Promise<Errors.Result<Sensor>> {
     return Errors.errResult('todo', 'TODO');
   }
 
@@ -87,8 +87,7 @@ export class SensorsDao {
    *    DB: a database error was encountered.
    */
   async addSensorReading(sensorReading: SensorReading)
-    : Promise<Errors.Result<SensorReading>> 
-  {
+    : Promise<Errors.Result<SensorReading>> {
     return Errors.errResult('todo', 'TODO');
   }
 
@@ -99,18 +98,17 @@ export class SensorsDao {
    *    DB: a database error was encountered.
    */
   async findSensorTypes(search: SensorTypeSearch)
-    : Promise<Errors.Result<SensorType[]>> 
-  {
+    : Promise<Errors.Result<SensorType[]>> {
     return Errors.errResult('todo', 'TODO');
   }
-  
+
   /** Find sensors which satify search. Returns [] if none. 
    *  Note that all primitive Sensor fields can be used to filter.
    *  The returned array must be sorted by sensor-type id.
    *  Error Codes: 
    *    DB: a database error was encountered.
    */
-  async findSensors(search: SensorSearch) : Promise<Errors.Result<Sensor[]>> {
+  async findSensors(search: SensorSearch): Promise<Errors.Result<Sensor[]>> {
     return Errors.errResult('todo', 'TODO');
   }
 
@@ -120,11 +118,10 @@ export class SensorsDao {
    *    DB: a database error was encountered.
    */
   async findSensorReadings(search: SensorReadingSearch)
-    : Promise<Errors.Result<SensorReading[]>> 
-  {
+    : Promise<Errors.Result<SensorReading[]>> {
     return Errors.errResult('todo', 'TODO');
   }
-  
+
 } //SensorsDao
 
 //mongo err.code on inserting duplicate entry
