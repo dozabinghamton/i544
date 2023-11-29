@@ -18,7 +18,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cs544-js-utils": "https://sunybing:sunybing@zdu.binghamton.edu/cs544/lib/cs544-js-utils-0.0.1.tgz"
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.10.0",
+    "chai": "^4.3.10",
+    "cs544-js-utils": "https://sunybing:sunybing@zdu.binghamton.edu/cs544/lib/cs544-js-utils-0.0.1.tgz",
+    "cs544-node-utils": "https://sunybing:sunybing@zdu.binghamton.edu/cs544/lib/cs544-node-utils-0.0.1.tgz",
+    "mocha": "^10.2.0",
+    "typecript": "^0.0.1-security"
   },
   "devDependencies": {
     "parcel": "^2.9.3",
