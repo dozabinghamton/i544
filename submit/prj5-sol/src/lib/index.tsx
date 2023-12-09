@@ -10,7 +10,7 @@ import * as ReactDOM from 'react-dom/client';
 
 
 ReactDOM.createRoot(document.querySelector('#app')!)
-  .render(<App wsUrl={getWsUrl()}/>);
+  .render(<App wsUrl={getWsUrl()} />);
 
 function getWsUrl() {
   const url = new URL(document.location.href);
